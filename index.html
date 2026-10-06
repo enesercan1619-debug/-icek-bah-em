@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Çiçek Bahçem</title>
+<meta name="description" content="Taze çiçekler, bitkiler ve siparişler.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--pink:#e95b92;--pink2:#fff0f6;--ink:#2b2630;--muted:#756b74;--card:#fff;--line:#eadde4;--shadow:0 12px 35px #43203412}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;color:var(--ink);background:#fff9fc}a{text-decoration:none;color:inherit}
+header{position:sticky;top:0;z-index:5;background:#ffffffeb;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{max-width:1150px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:12px}.brand{font-weight:900;font-size:20px;margin-right:auto}.brand span{color:var(--pink)}
+.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:800;cursor:pointer}.primary{background:var(--pink);color:#fff}.soft{background:var(--pink2);color:#b23d6b}
+.hero{max-width:1150px;margin:25px auto;padding:34px 20px;display:grid;grid-template-columns:1.4fr .8fr;gap:20px}.heroCard{background:linear-gradient(135deg,#fff,#ffe9f2);border:1px solid var(--line);border-radius:25px;padding:32px;box-shadow:var(--shadow)}h1{font-size:clamp(30px,5vw,54px);line-height:1.03;margin:0 0 12px}.hero p{color:var(--muted);font-size:17px}.tips{display:grid;gap:12px}.tip{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
+main{max-width:1150px;margin:auto;padding:0 20px 100px}.sectionTitle{display:flex;align-items:center;gap:10px;margin:12px 0}.sectionTitle h2{margin-right:auto}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}.photo{height:230px;background:#f7edf2;display:flex;align-items:center;justify-content:center;font-size:60px;overflow:hidden}.photo img{width:100%;height:100%;object-fit:cover}.body{padding:17px}.name{font-size:20px;font-weight:900}.desc{color:var(--muted);min-height:44px;margin:7px 0}.row{display:flex;align-items:center;gap:8px}.price{font-weight:900;font-size:19px;margin-right:auto}.stock{font-size:13px;color:#5c5360}.empty{padding:35px;text-align:center;background:#fff;border:1px dashed var(--line);border-radius:18px;color:var(--muted)}
+.review{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.stars{letter-spacing:2px}.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.cart{position:fixed;right:18px;bottom:18px;z-index:10;background:#222;color:#fff;border-radius:18px;padding:14px 18px;box-shadow:0 10px 30px #0003;cursor:pointer}.badge{background:var(--pink);padding:3px 8px;border-radius:999px;font-size:12px}
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal.show{display:flex}.sheet{background:#fff;width:min(680px,100%);max-height:90vh;overflow:auto;border-radius:25px 25px 0 0;padding:22px}.sheet h3{margin-top:0}.field{display:grid;gap:6px;margin:12px 0}.field input,.field textarea{padding:12px;border:1px solid var(--line);border-radius:11px;font:inherit}.item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.item .grow{flex:1}.qty button{width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:8px}.footer{max-width:1150px;margin:auto;padding:25px 20px 45px;color:var(--muted);text-align:center}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.reviews{grid-template-columns:1fr}.nav .optional{display:none}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.hero{padding:20px 12px}.heroCard{padding:25px}main{padding-left:12px;padding-right:12px}.nav{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="brand">🌸 Çiçek <span>Bahçem</span></div><a id="igBtn" class="btn soft optional" target="_blank">Instagram</a><a id="waBtn" class="btn primary optional" target="_blank">WhatsApp</a><a class="btn soft" href="admin.html">Yönetim</a></div></header>
+<section class="hero">
+<div class="heroCard"><h1>Bahçeden evinize, sevgiyle. 🌷</h1><p>Taze çiçekleri keşfet, sepete ekle ve WhatsApp üzerinden kolayca sipariş ver.</p><div class="row"><button class="btn primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Çiçeklere bak</button><a class="btn soft" id="heroWa" target="_blank">WhatsApp</a></div></div>
+<div class="tips"><div class="tip">🌱 <b>Taze ürünler</b><br><small>Stoklar yönetim panelinden güncellenir.</small></div><div class="tip">📦 <b>Kolay sipariş</b><br><small>Sepetini oluştur, bilgilerini bırak.</small></div><div class="tip">💬 <b>Hızlı iletişim</b><br><small>WhatsApp ve Instagram üzerinden ulaş.</small></div></div>
+</section>
+<main>
+<section id="products"><div class="sectionTitle"><h2>Çiçekler</h2><select id="sort" onchange="renderProducts()"><option value="new">Yeni</option><option value="low">Fiyat: düşükten</option><option value="high">Fiyat: yüksekten</option></select></div><div id="productGrid" class="grid"></div></section>
+<section style="margin-top:40px"><div class="sectionTitle"><h2>Müşteri yorumları</h2></div><div id="reviewGrid" class="reviews"></div><button class="btn soft" onclick="openReview()">Yorum bırak</button></section>
+</main>
+<div class="cart" onclick="openCart()">🛒 Sepet <span class="badge" id="cartCount">0</span></div>
+<div class="modal" id="cartModal" onclick="if(event.target===this)closeModal('cartModal')"><div class="sheet"><h3>Sepet</h3><div id="cartItems"></div><div class="row" style="margin-top:15px"><b style="margin-right:auto">Toplam</b><b id="total">₺0</b></div><div class="field"><label>Ad Soyad</label><input id="cName" placeholder="Adınız"></div><div class="field"><label>Telefon</label><input id="cPhone" placeholder="05xx xxx xx xx"></div><div class="field"><label>Adres</label><textarea id="cAddress" rows="3" placeholder="Teslimat adresi"></textarea></div><button class="btn primary" style="width:100%" onclick="placeOrder()">Siparişi WhatsApp'a gönder</button></div></div>
+<div class="modal" id="reviewModal" onclick="if(event.target===this)closeModal('reviewModal')"><div class="sheet"><h3>Yorum bırak</h3><div class="field"><label>Ad</label><input id="rName"></div><div class="field"><label>Puan (1-5)</label><input id="rRating" type="number" min="1" max="5" value="5"></div><div class="field"><label>Yorum</label><textarea id="rText" rows="4"></textarea></div><button class="btn primary" onclick="sendReview()">Gönder</button></div></div>
+<footer class="footer">© Çiçek Bahçem · Tüm hakları saklıdır.</footer>
+<script>
+const SUPABASE_URL="https://wtvdjbfvqwyghwrmfgth.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_ToBIBCrUxCd61AeheIabPg_TNbGsNMp";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+let products=[],cart=[];
+let contact={instagram:"",whatsapp:""};
+async function load(){
+ if(SUPABASE_URL.startsWith("BURAYA_")){document.getElementById("productGrid").innerHTML='<div class="empty" style="grid-column:1/-1">Önce Supabase bağlantısını eklemelisin. Kurulum dosyasındaki adımları izle.</div>';return}
+ const [{data:p},{data:c},{data:r}]=await Promise.all([sb.from("products").select("*").eq("active",true).order("created_at",{ascending:false}),sb.from("site_settings").select("*").eq("id",1).maybeSingle(),sb.from("reviews").select("*").eq("approved",true).order("created_at",{ascending:false})]);
+ products=p||[]; if(c)contact=c; renderProducts(); renderReviews(); setLinks();
+}
+function setLinks(){const ig=contact.instagram||"#",wa=contact.whatsapp||"";document.getElementById("igBtn").href=ig;document.getElementById("heroWa").href=wa?`https://wa.me/${wa.replace(/\D/g,"")}`:"#";document.getElementById("waBtn").href=wa?`https://wa.me/${wa.replace(/\D/g,"")}`:"#"}
+function renderProducts(){let a=[...products],s=document.getElementById("sort").value;if(s==="low")a.sort((x,y)=>x.price-y.price);if(s==="high")a.sort((x,y)=>y.price-x.price);let g=document.getElementById("productGrid");g.innerHTML=a.length?a.map(p=>`<article class="card"><div class="photo">${p.image_url?`<img src="${esc(p.image_url)}">`:"🌸"}</div><div class="body"><div class="name">${esc(p.name)}</div><div class="desc">${esc(p.description||"")}</div><div class="row"><div class="price">₺${Number(p.price).toLocaleString("tr-TR")}</div><div class="stock">${p.stock>0?`Stok: ${p.stock}`:"Tükendi"}</div></div><button class="btn primary" style="width:100%;margin-top:10px" ${p.stock<1?"disabled":""} onclick="add(${p.id})">Sepete ekle</button></div></article>`).join(""):'<div class="empty" style="grid-column:1/-1">Henüz ürün eklenmedi.</div>'}
+function renderReviews(){let r=window.__reviews||[];document.getElementById("reviewGrid").innerHTML=r.length?r.map(x=>`<div class="review"><div class="stars">${"★".repeat(x.rating)}${"☆".repeat(5-x.rating)}</div><b>${esc(x.name)}</b><p>${esc(x.text)}</p></div>`).join(""):'<div class="empty" style="grid-column:1/-1">Henüz onaylanmış yorum yok.</div>'}
+async function loadReviews(){const {data}=await sb.from("reviews").select("*").eq("approved",true).order("created_at",{ascending:false});window.__reviews=data||[];renderReviews()}
+function add(id){let p=products.find(x=>x.id===id),i=cart.find(x=>x.id===id);if(!p)return;if(i){if(i.qty<p.stock)i.qty++}else cart.push({id:p.id,name:p.name,price:p.price,qty:1});updateCart()}
+function updateCart(){document.getElementById("cartCount").textContent=cart.reduce((a,x)=>a+x.qty,0)}
+function openCart(){document.getElementById("cartModal").classList.add("show");renderCart()}
+function renderCart(){let el=document.getElementById("cartItems");if(!cart.length){el.innerHTML='<div class="empty">Sepetin boş.</div>';document.getElementById("total").textContent="₺0";return}el.innerHTML=cart.map(x=>`<div class="item"><div class="grow"><b>${esc(x.name)}</b><br><small>₺${Number(x.price).toLocaleString("tr-TR")}</small></div><div class="qty"><button onclick="changeQty(${x.id},-1)">−</button> ${x.qty} <button onclick="changeQty(${x.id},1)">+</button></div></div>`).join("");document.getElementById("total").textContent="₺"+cart.reduce((a,x)=>a+x.price*x.qty,0).toLocaleString("tr-TR")}
+function changeQty(id,d){let i=cart.find(x=>x.id===id);if(!i)return;i.qty+=d;if(i.qty<=0)cart=cart.filter(x=>x.id!==id);updateCart();renderCart()}
+async function placeOrder(){if(!cart.length)return alert("Sepet boş.");let name=cName.value.trim(),phone=cPhone.value.trim(),address=cAddress.value.trim();if(!name||!phone||!address)return alert("Lütfen bilgileri doldur.");let total=cart.reduce((a,x)=>a+x.price*x.qty,0);let items=cart.map(x=>({product_id:x.id,name:x.name,qty:x.qty,price:x.price}));let {error}=await sb.from("orders").insert({customer_name:name,phone,address,total,items,status:"Yeni"});if(error)return alert(error.message);let msg=`Merhaba, sipariş vermek istiyorum.%0A%0A${items.map(x=>`• ${x.name} x${x.qty} = ₺${x.price*x.qty}`).join("%0A")}%0A%0AToplam: ₺${total}%0AAd: ${encodeURIComponent(name)}%0ATel: ${encodeURIComponent(phone)}%0AAdres: ${encodeURIComponent(address)}`;let num=(contact.whatsapp||"").replace(/\D/g,"");window.open(num?`https://wa.me/${num}?text=${msg}`:"#","_blank");cart=[];updateCart();closeModal("cartModal");alert("Sipariş kaydedildi.")}
+function openReview(){document.getElementById("reviewModal").classList.add("show")}
+async function sendReview(){let name=rName.value.trim(),rating=Math.max(1,Math.min(5,Number(rRating.value))),text=rText.value.trim();if(!name||!text)return alert("Ad ve yorum gerekli.");let {error}=await sb.from("reviews").insert({name,rating,text,approved:false});if(error)return alert(error.message);closeModal("reviewModal");alert("Yorumun gönderildi. Onaylandıktan sonra görünecek.")}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+load();
+</script>
+</body></html>
